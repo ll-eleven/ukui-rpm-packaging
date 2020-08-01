@@ -8,8 +8,7 @@ Summary:        power management tool for the UKUI desktop
 
 License:        GPL-2.0 License
 URL:            https://github.com/ukui/ukui-power-manager
-# %%Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 
@@ -44,7 +43,7 @@ BuildRequires: libgnome-keyring-devel
 
 Requires: dbus-x11
 Requires: mate-notification-daemon
-Requires: ukui-power-manager-common
+Requires: %{name}-common%{?_isa} = %{version}-%{release}
 Requires: systemd
 Requires: ukui-polkit
 Requires: upower
@@ -87,7 +86,7 @@ Summary:  power management tool for the UKUI desktop (common files)
 %{make_build}
 
 %install
-%{make_install}  INSTALL_ROOT=%{buildroot} 
+%{make_install} INSTALL_ROOT=%{buildroot}
 
 %files
 %doc debian/copyright debian/changelog

@@ -6,8 +6,7 @@ Summary:        Advanced ukui menu
 
 License:         GPL-3.0 License
 URL:            https://github.com/ukui/ukui-menu
-# %%Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 
@@ -20,7 +19,8 @@ BuildRequires:  bamf-devel
 BuildRequires:  libXrandr-devel
 BuildRequires:  libXtst-devel
 BuildRequires:  libX11-devel
-
+BuildRequires:  qt5-linguist
+BuildRequires:  kf5-kwindowsystem-devel
 Requires:  gsettings-qt
 Requires:  qt5-qtx11extras
 Requires:  bamf-daemon
@@ -38,17 +38,23 @@ Requires:  libX11
 %setup -q
 
 %build
+export PATH=%{_qt5_bindir}:$PATH
 mkdir qmake-build
 pushd qmake-build
-%{qmake_qt5} %{_qt5_qmake_flags} CONFIG+=enable-by-default  ..
+%if 0%{?rhel} == 8
+if ! grep -q "qm_files.CONFIG" /usr/lib64/qt5/mkspecs/features/lrelease.prf; then 
+sed -i '/qm_files.path/a qm_files.CONFIG = no_check_exist'  /usr/lib64/qt5/mkspecs/features/lrelease.prf
+fi
+%endif
+%{qmake_qt5} ..
 %{make_build}
 popd
 
 %install
 pushd qmake-build
-%{make_install}  INSTALL_ROOT=%{buildroot} 
+%{make_install} INSTALL_ROOT=%{buildroot}
 popd 
-mkdir -p  %{buildroot}/usr/share/man/man1/
+install -d %{buildroot}/usr/share/man/man1/
 gzip -c man/ukui-menu.1  > %{buildroot}/usr/share/man/man1/ukui-menu.1.gz
 
 %files
@@ -56,3 +62,4 @@ gzip -c man/ukui-menu.1  > %{buildroot}/usr/share/man/man1/ukui-menu.1.gz
 %{_sysconfdir}/xdg/autostart/ukui-menu.desktop
 %{_bindir}/ukui-menu
 %{_datadir}/man/man1/ukui-menu.1.gz
+%{_datadir}/ukui-menu/

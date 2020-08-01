@@ -1,16 +1,12 @@
-# enable download source
-%undefine _disable_source_fetch
-
 Name:           ukui-panel
-Version:        master
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:        ukui desktop panel
 
 
 License:         LGPL-2.1 License
 URL:            https://github.com/ukui/ukui-panel
-#Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 BuildRequires:  peony-devel
@@ -59,18 +55,18 @@ Suggests: ukui-window-switch
 %setup -q
 
 %build
-
+export PATH=%{_qt5_bindir}:$PATH
 mkdir cmake-build
 pushd cmake-build
-%{cmake3} ..
-%{make_build}
+%{cmake_kf5} ..
+%{cmake_build}
 popd 
 
 %install
 pushd cmake-build
-%{make_install}  INSTALL_ROOT=%{buildroot} 
+%{cmake_install}
 popd 
-mkdir -p  %{buildroot}/usr/share/man/man1/
+install -d   %{buildroot}/usr/share/man/man1/
 gzip -c man/ukui-panel.1  > %{buildroot}/usr/share/man/man1/ukui-panel.1.gz
 gzip -c man/ukui-flash-disk.1 > %{buildroot}/usr/share/man/man1/ukui-flash-disk.1.gz
 

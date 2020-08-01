@@ -1,6 +1,3 @@
-# enable download source
-%undefine _disable_source_fetch
-
 Name:           ukui-session-manager
 Version:        master
 Release:        1%{?dist}
@@ -9,8 +6,7 @@ Summary:        Session manager of the UKUI desktop environment
 
 License:        LGPL-2.1 License
 URL:            https://github.com/ukui/ukui-session-manager
-#Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 BuildRequires:  qt5-qtdeclarative-devel
@@ -27,7 +23,7 @@ BuildRequires:  libqtxdg-devel
 BuildRequires:  systemd-devel
 
 Requires: peony
-Requires: ukui-kwin
+Requires: (ukui-kwin or ukwm)
 Requires: ukui-panel
 Requires: ukui-polkit
 Requires: ukui-screensaver
@@ -46,17 +42,23 @@ Provides: x-session-manager
 %setup -q
 
 %build
+export PATH=%{_qt5_bindir}:$PATH
 mkdir cmake-build
 pushd cmake-build
-%cmake3 ..
-%{make_build}
+%if 0%{?rhel} == 8
+if ! grep -q "qm_files.CONFIG" /usr/lib64/qt5/mkspecs/features/lrelease.prf; then 
+sed -i '/qm_files.path/a qm_files.CONFIG = no_check_exist'  /usr/lib64/qt5/mkspecs/features/lrelease.prf
+fi
+%endif
+%{cmake_kf5} ..
+%{cmake_build}
 popd
 
 %install
 pushd cmake-build
-%make_install INSTALL_ROOT=%{buildroot}
+%{cmake_install}
 popd
-mkdir -p %{buildroot}/etc/X11/Xsession.d/    %{buildroot}/usr/share/man/man1/
+install -d %{buildroot}/etc/X11/Xsession.d/    %{buildroot}/usr/share/man/man1/
 install -m644  debian/99ukui-environment %{buildroot}/etc/X11/Xsession.d/99ukui-environment
 gzip -c man/ukui-session.1 >  %{buildroot}/usr/share/man/man1/ukui-session.1.gz 
 gzip -c man/ukui-session-tools.1 > %{buildroot}/usr/share/man/man1/ukui-session-tools.1.gz

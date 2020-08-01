@@ -6,8 +6,7 @@ Summary:        kylin-fingerprint, kylin-fprint-login
 
 License:         GPL-3.0 License
 URL:            https://github.com/ukui/ukui-biometric-manager
-#Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 BuildRequires:  qt5-qtbase-devel
@@ -27,17 +26,18 @@ Requires: pam-biometric
 %setup -q
  
 %build
+export PATH=%{_qt5_bindir}:$PATH
 mkdir qmake-build
 pushd qmake-build
-%{qmake_qt5} %{_qt5_qmake_flags} CONFIG+=enable-by-default  ..
+%{qmake_qt5} ..
 %{make_build}
 popd
 
 %install
 pushd qmake-build
-%{make_install}  INSTALL_ROOT=%{buildroot} 
+%{make_install} INSTALL_ROOT=%{buildroot}
 popd
-mkdir -p %{buildroot}/usr/share/man/man1/
+install -d %{buildroot}/usr/share/man/man1/
 gzip -c man/biometric-manager.1		 > %{buildroot}/usr/share/man/man1/biometric-manager.1.gz
 
 %files

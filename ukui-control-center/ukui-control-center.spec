@@ -6,10 +6,8 @@ Summary:        utilities to configure the UKUI desktop
 
 License:         GPL-2.0 License
 URL:            https://github.com/ukui/ukui-control-center
-# %%Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 
-Patch0:        ukui-control-center-libdir.patch
 
 BuildArch:      x86_64
 
@@ -34,7 +32,16 @@ BuildRequires:  libkscreen-qt5-devel
 BuildRequires:  kf5-ki18n-devel
 BuildRequires:  libcanberra-devel
 BuildRequires:  libXi-devel
-Recommends: edid-decode
+BuildRequires:  mate-desktop-devel
+BuildRequires:  libxkbcommon-devel 
+BuildRequires:  libxkbfile-devel
+
+
+Requires: redhat-lsb-core
+Requires: edid-decode
+Requires: qt5-qtquickcontrols
+Requires: qt5-qtgraphicaleffects
+
 Recommends: redshift
 Recommends: qt5-qtquickcontrols
 
@@ -56,30 +63,28 @@ utilities to configure the UKUI desktop
 
 %prep
 %setup -q
-%patch0 -p0
 
 %build
+export PATH=%{_qt5_bindir}:$PATH
 mkdir qmake-build
 pushd qmake-build
-%{qmake_qt5} %{_qt5_qmake_flags} CONFIG+=enable-by-default  ..
+%{qmake_qt5} ..
 %{make_build}
 popd
 
 %install
 pushd qmake-build
-%{make_install}  INSTALL_ROOT=%{buildroot} 
-cp -r pluginlibs %{buildroot}/usr/lib64/control-center
+%{make_install} INSTALL_ROOT=%{buildroot}
 popd
-mkdir -p %{buildroot}/usr/share/dbus-1/system-services/ %{buildroot}/etc/dbus-1/system.d/ 
+install -d  %{buildroot}/usr/share/dbus-1/system-services/ %{buildroot}/etc/dbus-1/system.d/ 
 install -m644 registeredQDbus/conf/com.control.center.qt.systemdbus.service %{buildroot}/usr/share/dbus-1/system-services/com.control.center.qt.systemdbus.service
 install -m644 registeredQDbus/conf/com.control.center.qt.systemdbus.conf %{buildroot}/etc/dbus-1/system.d/com.control.center.qt.systemdbus.conf
 
 %files
 %doc debian/copyright debian/changelog
 %{_sysconfdir}/dbus-1/system.d/com.control.center.qt.systemdbus.conf
-%{_bindir}/launchSysDbus
-%{_bindir}/ukui-control-center
-%{_libdir}/control-center/
+%{_bindir}/*
+%{_libdir}/ukui-control-center/
 %{_datadir}/glib-2.0/schemas/*
 %{_datadir}/applications/ukui-control-center.desktop
 %{_datadir}/dbus-1/system-services/com.control.center.qt.systemdbus.service

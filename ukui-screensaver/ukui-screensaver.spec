@@ -6,8 +6,7 @@ Summary:         Screensaver for UKUI desktop environment
 
 License:        GPLv2+
 URL:            https://github.com/ukui/ukui-screensaver
-# %%Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 Patch0:         ukui-screensaver-libexec-path.patch
 BuildArch:      x86_64
 
@@ -37,17 +36,18 @@ A simple and lightweight screensaver written by Qt5.
 %patch0 -p0
 
 %build
+export PATH=%{_qt5_bindir}:$PATH
 mkdir cmake-build
 pushd cmake-build
-%cmake3 ..
-%{make_build}
+%{cmake} ..
+%{cmake_build}
 popd
 
 %install
 pushd cmake-build
-%{make_install}  INSTALL_ROOT=%{buildroot} 
+%{cmake_install}
 popd
-mkdir -p %{buildroot}/usr/share/man/man1
+install -d %{buildroot}/usr/share/man/man1
 gzip -c man/ukui-screensaver-backend.1 >  %{buildroot}/usr/share/man/man1/ukui-screensaver-backend.1.gz
 gzip -c man/ukui-screensaver-dialog.1 >  %{buildroot}/usr/share/man/man1/ukui-screensaver-dialog.1.gz
 gzip -c man/ukui-screensaver-command.1 >  %{buildroot}/usr/share/man/man1/ukui-screensaver-command.1.gz

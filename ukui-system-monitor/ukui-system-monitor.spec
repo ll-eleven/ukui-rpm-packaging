@@ -3,10 +3,9 @@ Version:        master
 Release:        1%{?dist}
 Summary:        simple system monitor written in QT
 
-License:        GPLv2+
+License:         GPL-3.0 License
 URL:            https://github.com/ukui/ukui-system-monitor
-# %%Source0:        https://github.com/ukui/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source0:        https://github.com/ukui/%{name}/archive/%{version}.zip#/%{name}-%{version}.zip
+Source0:        %{name}-%{version}.tar.gz
 BuildArch:      x86_64
 
 
@@ -37,15 +36,16 @@ Requires: pciutils
 
 
 %build
+export PATH=%{_qt5_bindir}:$PATH
 mkdir qmake-build
 pushd qmake-build
-%{qmake_qt5} %{_qt5_qmake_flags} CONFIG+=enable-by-default  ..	
+%{qmake_qt5} ..	
 %{make_build}
 popd
 
 %install
 pushd qmake-build
-%{make_install}  INSTALL_ROOT=%{buildroot} 
+%{make_install} INSTALL_ROOT=%{buildroot}
 popd
 
 %files
