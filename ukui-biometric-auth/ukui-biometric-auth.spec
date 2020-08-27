@@ -1,5 +1,7 @@
+%global __cmake_in_source_build 1
+
 Name:           ukui-biometric-auth
-Version:        master
+Version:        1.0.4
 Release:        1%{?dist}
 Summary:        ukui-biometric-auth
 
@@ -7,14 +9,12 @@ License:         GPL-3.0 License
 URL:            https://github.com/ukui/ukui-biometric-auth
 Source0:        %{name}-%{version}.tar.gz
 
-Patch0:        ukui-biometric-auth-libdir.patch
-
 BuildArch:      x86_64
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qttools-devel
 BuildRequires:  pam-devel
 BuildRequires:  polkit-qt5-1-devel
-
+BuildRequires:  kf5-rpm-macros
 Requires: pam-biometric%{?_isa} = %{version}-%{release}
 Requires: ukui-polkit%{?_isa} = %{version}-%{release}
 
@@ -51,27 +51,26 @@ Summary: UKUI authentication agent for PolicyKit-1
 %prep
 
 %setup -q
-%patch0 -p0
+
+sed -i 's|(TARGETS pam_biometric DESTINATION /lib/security)|(TARGETS pam_biometric DESTINATION /usr/lib64/security)|g' pam-biometric/CMakeLists.txt
+sed -i 's|DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/ukui-polkit)|DESTINATION lib64/${CMAKE_LIBRARY_ARCHITECTURE}/ukui-polkit)|g' polkit-agent/CMakeLists.txt
+sed -i 's|/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}|/usr/lib64|g'   polkit-agent/CMakeLists.txt
 
 %build
 export PATH=%{_qt5_bindir}:$PATH
-mkdir cmake-build
-pushd cmake-build
-%{cmake} ..
-%{cmake_build}
-popd
+%{cmake}
+%{make_build} 
 
 %install
-pushd cmake-build
-%{cmake_install}
-popd
+%{make_install} INSTALL_ROOT=%{buildroot}
 install -d %{buildroot}/usr/share/man/man1/
 gzip -c man/bioctl.1 > %{buildroot}/usr/share/man/man1/bioctl.1.gz
 gzip -c man/bioauth.1 > %{buildroot}/usr/share/man/man1/bioauth.1.gz
 gzip -c man/biodrvctl.1 > %{buildroot}/usr/share/man/man1/biodrvctl.1.gz
 
 %files
-%doc debian/changelog debian/copyright
+%doc debian/changelog
+%license  debian/copyright 
 %{_datadir}/ukui-biometric/images
 %{_datadir}/ukui-biometric/i18n_qm/*
 %{_datadir}/ukui-biometric/i18n_qm/polkit/*

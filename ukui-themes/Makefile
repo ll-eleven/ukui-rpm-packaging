@@ -18,20 +18,15 @@ docker-build:
 	$(DOCKER) run  --ulimit=host  --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:32   /bin/bash -c "sudo dnf install -y make curl rpm-build && make build"
 
 deps:
-ifneq (,$(filter .el%,$(DIST)))
 	@echo ">> install dependencies for ${PKG_NAME}"
-	dnf install -y which gcc gcc-c++ make cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros sassc
-	ln -sf /usr/bin/sassc /usr/bin/sass
-else 
-	@echo ">> install dependencies for ${PKG_NAME}"
-	dnf install -y which gcc gcc-c++ make cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros rubygem-sass
-endif
+	dnf install -y git which gcc gcc-c++ make cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros sassc
 
 download-source:
 	@echo "download ${PKG_NAME} source code"
 	mkdir -p ~/rpmbuild/SOURCES/
+	rm -rf ${PKG_NAME} 
 	git clone https://github.com/ukui/${PKG_NAME}
-	cd ${PKG_NAME} && git archive  --format=tar.gz --prefix=${PKG_NAME}-${PKG_VERSION}/  -o  ~/rpmbuild/SOURCES/${PKG_NAME}-${PKG_VERSION}.tar.gz  ${GitTag}
+	cd ${PKG_NAME} && git archive  --format=tar.gz --prefix=${PKG_NAME}-${PKG_VERSION}/  -o  ~/rpmbuild/SOURCES/${PKG_NAME}-${PKG_VERSION}.tar.gz  HEAD
 	rm -rf ${PKG_NAME} 
 
 build: | deps download-source

@@ -1,12 +1,11 @@
 Name:           biometric-authentication
-Version:        master
+Version:        0.9.63
 Release:        1%{?dist}
 Summary:        Biometric Authentication Service
 
 License:        LGPL-3.0 License
 URL:            https://github.com/ukui/biometric-authentication
 Source0:        %{name}-%{version}.tar.gz
-Patch0:					biometric-authentication-unitdir.patch
 BuildArch:      x86_64
 
 
@@ -16,13 +15,14 @@ BuildRequires: glib2-devel
 BuildRequires: gtk3-devel 
 BuildRequires: libusb-devel
 BuildRequires: sqlite-devel
-BuildRequires: libfprint-devel
+BuildRequires: libfprint-devel <= 1.0
 BuildRequires: polkit-devel
 BuildRequires: libtool
 BuildRequires: libuuid-devel
 
 Requires: systemd
 Requires: %{name}-libs%{?_isa}  = %{version}-%{release}
+Requires: libfprint <= 1.0
 
 %description
  The service layer of the biometric identification authentication framework.
@@ -105,7 +105,7 @@ Requires: %{name}-libs%{?_isa}  = %{version}-%{release}
 
 %prep
 %setup -q
-%patch0 -p0
+sed -i 's|/lib/systemd/system/|/usr/lib/systemd/system/|g'  data/Makefile.am
 ./autogen.sh --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib64 --unitdir=/usr/lib/system/systemd
 %{configure} --disable-dependency-tracking  --with-bio-config-dir=/etc/biometric-auth/   --disable-silent-rules --with-bio-db-dir=/var/lib/biometric-auth/     --with-bio-db-name=biometric.db     --with-bio-config-dir=/etc/biometric-auth/     --with-bio-driver-dir=/usr/lib64/biometric-authentication/drivers    --with-bio-extra-dir=/usr/lib64/biometric-authentication/drivers/extra      --libexecdir=/usr/libexec/biometric-authentication
 
@@ -120,13 +120,18 @@ gzip -c doc/man/biometric-auth-client.1	 > %{buildroot}/usr/share/man/man1/biome
 gzip -c doc/man/biometric-device-discover.1 > %{buildroot}/usr/share/man/man1/biometric-device-discover.1.gz
 gzip -c doc/man/biometric-config-tool.8 >%{buildroot}/usr/share/man/man8/biometric-config-tool.8.gz
 
+%find_lang %name
+
 sed -i 's|/usr/lib/biometric-authentication/biometric-authenticationd|/usr/libexec/biometric-authentication/biometric-authenticationd|g' %{buildroot}/%{_unitdir}/biometric-authentication.service
 
+
+
 %files
-%doc debian/copyright debian/changelog 
+%doc debian/changelog
+%license  debian/copyright  
 %{_sysconfdir}/biometric-auth/biometric-drivers.conf
 %{_sysconfdir}/dbus-1/system.d/org.ukui.Biometric.conf
-%{_sysconfdir}/init.d/biometric-authentication
+%exclude %{_sysconfdir}/init.d/biometric-authentication
 %{_libexecdir}/biometric-authentication
 %{_datadir}/dbus-1/interfaces/org.ukui.Biometric.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.policykit.pkexec.biometric-authentication.policy
@@ -141,17 +146,11 @@ sed -i 's|/usr/lib/biometric-authentication/biometric-authenticationd|/usr/libex
 %{_libdir}/pkgconfig/libbiometric.pc
 %{_libdir}/libbiometric.a
 %{_libdir}/libbiometric.la
-
-%files libs
+ 
+%files libs -f %name.lang
 %{_libdir}/libbiometric.so  
 %{_libdir}/libbiometric.so.0  
 %{_libdir}/libbiometric.so.0.0.0
-%{_datadir}/locale/bo/LC_MESSAGES/biometric-authentication.mo
-%{_datadir}/locale/es/LC_MESSAGES/biometric-authentication.mo
-%{_datadir}/locale/fr/LC_MESSAGES/biometric-authentication.mo
-%{_datadir}/locale/pt/LC_MESSAGES/biometric-authentication.mo
-%{_datadir}/locale/ru/LC_MESSAGES/biometric-authentication.mo
-%{_datadir}/locale/zh_CN/LC_MESSAGES/biometric-authentication.mo
 
 
 %files community-drivers

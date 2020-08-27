@@ -1,5 +1,5 @@
 Name:           indicator-china-weather
-Version:        master
+Version:        3.1.0
 Release:        1%{?dist}
 Summary:        Indicator that displays China weather information
 
@@ -44,7 +44,8 @@ gzip -c man/indicator-china-weather.1	 > %{buildroot}/usr/share/man/man1/indicat
 
 
 %files
-%doc debian/copyright debian/changelog
+%doc debian/changelog
+%license  debian/copyright 
 %{_mandir}/man1/indicator-china-weather.1.gz
 %{_sysconfdir}/xdg/autostart/indicator-china-weather.desktop
 %{_bindir}/indicator-china-weather

@@ -1,5 +1,8 @@
+%global __cmake_in_source_build 1
+
+
 Name:           ukui-screensaver
-Version:        master
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:         Screensaver for UKUI desktop environment
 
@@ -7,7 +10,6 @@ Summary:         Screensaver for UKUI desktop environment
 License:        GPLv2+
 URL:            https://github.com/ukui/ukui-screensaver
 Source0:        %{name}-%{version}.tar.gz
-Patch0:         ukui-screensaver-libexec-path.patch
 BuildArch:      x86_64
 
 
@@ -20,7 +22,7 @@ BuildRequires: glib2-devel
 BuildRequires: libX11-devel
 BuildRequires: libXtst-devel
 BuildRequires: gsettings-qt-devel
-
+BuildRequires: extra-cmake-modules
 
 Requires: ukui-session-manager
 Requires: mate-common
@@ -33,27 +35,22 @@ A simple and lightweight screensaver written by Qt5.
 %prep
 
 %setup -q
-%patch0 -p0
+sed -i 's|lib/ukui-screensaver|lib64/ukui-screensaver|g' screensaver/CMakeLists.txt
 
 %build
 export PATH=%{_qt5_bindir}:$PATH
-mkdir cmake-build
-pushd cmake-build
-%{cmake} ..
-%{cmake_build}
-popd
+%{cmake} 
 
 %install
-pushd cmake-build
-%{cmake_install}
-popd
+%{make_install} INSTALL_ROOT=%{buildroot}
 install -d %{buildroot}/usr/share/man/man1
 gzip -c man/ukui-screensaver-backend.1 >  %{buildroot}/usr/share/man/man1/ukui-screensaver-backend.1.gz
 gzip -c man/ukui-screensaver-dialog.1 >  %{buildroot}/usr/share/man/man1/ukui-screensaver-dialog.1.gz
 gzip -c man/ukui-screensaver-command.1 >  %{buildroot}/usr/share/man/man1/ukui-screensaver-command.1.gz
 
 %files
-%doc debian/copyright debian/changelog
+%doc debian/changelog
+%license  debian/copyright
 %{_sysconfdir}/pam.d/ukui-screensaver-qt
 %{_sysconfdir}/xdg/autostart/ukui-screensaver.desktop
 %{_sysconfdir}/xdg/menus/ukui-screensavers.menu

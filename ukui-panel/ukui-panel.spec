@@ -1,5 +1,8 @@
+%global __cmake_in_source_build 1
+
+
 Name:           ukui-panel
-Version:        3.0.0
+Version:        3.0.1
 Release:        1%{?dist}
 Summary:        ukui desktop panel
 
@@ -9,14 +12,13 @@ URL:            https://github.com/ukui/ukui-panel
 Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
+BuildRequires:  kf5-rpm-macros
 BuildRequires:  peony-devel
-BuildRequires:  SAASound-devel
 BuildRequires:  dbusmenu-qt5-devel
 BuildRequires:  glib2-devel
 BuildRequires:  libicu-devel
 BuildRequires:  kf5-solid-devel
 BuildRequires:  kf5-kwindowsystem-devel
-
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  pulseaudio-qt-devel
 BuildRequires:  qt5-qtsvg-devel
@@ -53,25 +55,26 @@ Suggests: ukui-window-switch
 
 %prep
 %setup -q
-
+sed -i  '/UKUiPreventInSourceBuilds.cmake/d'  panel/common/CMakeLists.txt panel/xdg/CMakeLists.txt CMakeLists.txt
 %build
 export PATH=%{_qt5_bindir}:$PATH
 mkdir cmake-build
 pushd cmake-build
-%{cmake_kf5} ..
-%{cmake_build}
-popd 
+%{cmake} ..
+%{make_build} 
+popd
 
 %install
 pushd cmake-build
-%{cmake_install}
-popd 
+%{make_install} INSTALL_ROOT=%{buildroot}
+popd
 install -d   %{buildroot}/usr/share/man/man1/
 gzip -c man/ukui-panel.1  > %{buildroot}/usr/share/man/man1/ukui-panel.1.gz
 gzip -c man/ukui-flash-disk.1 > %{buildroot}/usr/share/man/man1/ukui-flash-disk.1.gz
 
 %files
-%doc debian/copyright  debian/changelog
+%doc debian/changelog
+%license  debian/copyright
 %{_bindir}/ukui-panel
 %{_bindir}/ukui-flash-disk
 %{_sysconfdir}/xdg/autostart/ukui-flash-disk.desktop

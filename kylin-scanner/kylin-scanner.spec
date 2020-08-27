@@ -1,5 +1,5 @@
 Name:           kylin-scanner
-Version:        master
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Kylin Scanner is an interface-friendly scanning software developed with Qt5
 
@@ -47,7 +47,8 @@ export PATH=%{_qt5_bindir}:$PATH
 %{make_install} INSTALL_ROOT=%{buildroot}
 
 %files
-%doc debian/changelog  debian/copyright
+%doc debian/changelog
+%license  debian/copyright 
 %{_bindir}/*
 %{_datadir}/applications/kylin-scanner.desktop
 %{_datadir}/kylin-scanner/translations/kylin-scanner.zh_CN.qm

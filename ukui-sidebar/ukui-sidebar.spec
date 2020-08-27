@@ -1,5 +1,5 @@
 Name:           ukui-sidebar
-Version:        master
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:        parallels toolbox for UKUI
 
@@ -17,7 +17,6 @@ BuildRequires:  qt5-qtsvg-devel
 BuildRequires:  dconf-devel
 BuildRequires:  gsettings-qt-devel
 BuildRequires:  qt5-qtmultimedia-devel
-BuildRequires:  kf5-kwindowsystem-devel
 
 %description
 The ukui-sidebar is mainly used in the desktop operating system.
@@ -43,10 +42,11 @@ pushd qmake-build
 popd 
 
 %files
-%doc debian/copyright debian/changelog
+%doc debian/changelog
+%license  debian/copyright
 %{_sysconfdir}/xdg/autostart/ukui-sidebar.desktop
 %{_bindir}/*
 %{_libdir}/ukui-sidebar
-%{_datadir}/ukui-sidebar-notification
+%{_datadir}/ukui-sidebar*
 %{_datadir}/applications/*
 %{_datadir}/ukui-clock/

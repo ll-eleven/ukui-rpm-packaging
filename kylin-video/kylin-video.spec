@@ -1,5 +1,5 @@
 Name:           kylin-video
-Version:        master
+Version:        2.1.0
 Release:        1%{?dist}
 Summary:        Front-end for MPlayer and MPV
 
@@ -39,8 +39,8 @@ Recommends: crystalhd-firmware
 %prep
 
 %setup -q
- 
 %build
+
 export PATH=%{_qt5_bindir}:$PATH
 mkdir qmake-build
 pushd qmake-build
@@ -61,7 +61,8 @@ install -d %{buildroot}/usr/share/man/man1/
 gzip -c man/kylin-video.1	 > %{buildroot}/usr/share/man/man1/kylin-video.1.gz
 
 %files
-%doc debian/changelog  debian/copyright
+%doc debian/changelog
+%license  debian/copyright 
 %{_bindir}/kylin-video
 %{_mandir}/man1/kylin-video.1.gz
 %{_datadir}/applications/kylin-video.desktop

@@ -1,5 +1,5 @@
 Name:           ukui-control-center
-Version:        master
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:        utilities to configure the UKUI desktop
 
@@ -11,34 +11,37 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 
-BuildRequires:  qt5-qtbase-devel
-BuildRequires:  qt5-qtsvg-devel
-BuildRequires:  gsettings-qt-devel
-BuildRequires:  glib2-devel
-BuildRequires:  qt5-qtx11extras-devel
-BuildRequires:  libmatekbd-devel
-BuildRequires:  libxklavier-devel
-BuildRequires:  kf5-kconfigwidgets-devel
-BuildRequires:  kf5-kconfig-devel
-BuildRequires:  qt5-qtdeclarative-devel
-BuildRequires:  dconf-devel
-BuildRequires:  redshift
-BuildRequires:  edid-decode
-BuildRequires:  libmatemixer-devel
-BuildRequires:  libqtxdg-devel
-BuildRequires:  qt5-qtmultimedia-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  libkscreen-qt5-devel
-BuildRequires:  kf5-ki18n-devel
-BuildRequires:  libcanberra-devel
-BuildRequires:  libXi-devel
-BuildRequires:  mate-desktop-devel
-BuildRequires:  libxkbcommon-devel 
-BuildRequires:  libxkbfile-devel
-
+BuildRequires: qt5-qtbase-devel
+BuildRequires: qt5-qtsvg-devel
+BuildRequires: gsettings-qt-devel
+BuildRequires: glib2-devel
+BuildRequires: qt5-qtx11extras-devel
+BuildRequires: libmatekbd-devel
+BuildRequires: libxklavier-devel
+BuildRequires: kf5-kconfigwidgets-devel
+BuildRequires: kf5-kconfig-devel
+BuildRequires: qt5-qtdeclarative-devel
+BuildRequires: dconf-devel
+BuildRequires: edid-decode
+BuildRequires: libmatemixer-devel
+BuildRequires: qt5-qtmultimedia-devel
+BuildRequires: libxml2-devel
+BuildRequires: libkscreen-qt5-devel
+BuildRequires: kf5-ki18n-devel
+BuildRequires: libcanberra-devel
+BuildRequires: libXi-devel
+BuildRequires: mate-desktop-devel
+BuildRequires: libxkbcommon-devel 
+BuildRequires: libxkbfile-devel
+BuildRequires: qt5-linguist
+BuildRequires: kf5-kwindowsystem-devel
+BuildRequires: kf5-kguiaddons-devel
+BuildRequires: kf5-kcoreaddons-devel
+BuildRequires: boost-devel
+BuildRequires: libxcb-devel
+BuildRequires: xcb-util-devel
 
 Requires: redhat-lsb-core
-Requires: edid-decode
 Requires: qt5-qtquickcontrols
 Requires: qt5-qtgraphicaleffects
 
@@ -66,6 +69,11 @@ utilities to configure the UKUI desktop
 
 %build
 export PATH=%{_qt5_bindir}:$PATH
+%if 0%{?rhel} == 8
+if ! grep -q "qm_files.CONFIG" /usr/lib64/qt5/mkspecs/features/lrelease.prf; then
+  sed -i '/qm_files.path/a qm_files.CONFIG = no_check_exist'  /usr/lib64/qt5/mkspecs/features/lrelease.prf
+fi
+%endif
 mkdir qmake-build
 pushd qmake-build
 %{qmake_qt5} ..
@@ -79,14 +87,16 @@ popd
 install -d  %{buildroot}/usr/share/dbus-1/system-services/ %{buildroot}/etc/dbus-1/system.d/ 
 install -m644 registeredQDbus/conf/com.control.center.qt.systemdbus.service %{buildroot}/usr/share/dbus-1/system-services/com.control.center.qt.systemdbus.service
 install -m644 registeredQDbus/conf/com.control.center.qt.systemdbus.conf %{buildroot}/etc/dbus-1/system.d/com.control.center.qt.systemdbus.conf
+%find_lang installer-timezones
 
-%files
-%doc debian/copyright debian/changelog
+%files -f installer-timezones.lang 
+%doc debian/changelog
+%license  debian/copyright 
 %{_sysconfdir}/dbus-1/system.d/com.control.center.qt.systemdbus.conf
 %{_bindir}/*
 %{_libdir}/ukui-control-center/
 %{_datadir}/glib-2.0/schemas/*
 %{_datadir}/applications/ukui-control-center.desktop
 %{_datadir}/dbus-1/system-services/com.control.center.qt.systemdbus.service
+%{_datadir}/ukui-control-center/
 %{_datadir}/ukui/faces/*
-%{_datadir}/locale/*/LC_MESSAGES/*

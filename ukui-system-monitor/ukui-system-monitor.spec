@@ -1,5 +1,5 @@
 Name:           ukui-system-monitor
-Version:        master
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        simple system monitor written in QT
 
@@ -19,6 +19,7 @@ BuildRequires:  libgtop2-devel
 BuildRequires:  systemd-devel
 BuildRequires:  gsettings-qt-devel
 BuildRequires:  qt5-qtx11extras-devel
+BuildRequires:  libpcap-devel
 
 Requires: inotify-tools
 Requires: hdparm
@@ -49,6 +50,7 @@ pushd qmake-build
 popd
 
 %files
-%doc debian/copyright debian/changelog
+%doc debian/changelog
+%license  debian/copyright
 %{_bindir}/ukui-system-monitor
 %{_datadir}/applications/ukui-system-monitor.desktop

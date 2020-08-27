@@ -1,3 +1,6 @@
+%global __cmake_in_source_build 1
+
+
 Name:           ukui-kwin
 Version:        master
 Release:        1%{?dist}
@@ -13,6 +16,7 @@ BuildArch:      x86_64
 # Base
 
 BuildRequires: extra-cmake-modules
+BuildRequires: kf5-rpm-macros
 BuildRequires: glib2-devel
 
 # Qt
@@ -191,19 +195,16 @@ Requires: %{name}-libs%{?_isa}  = %{version}-%{release}
 
 %build
 export PATH=%{_qt5_bindir}:$PATH
-mkdir cmake-build
-pushd cmake-build
-%{cmake_kf5} ..
-%{cmake_build}
-popd
+%{cmake} -DLIBEXEC_INSTALL_DIR:PATH=%{_libexecdir} 
+%{make_build}
 
 %install
-pushd cmake-build
-%{cmake_install}
-popd
+%{make_install}
+%find_lang %name
 
 %files
-%doc debian/copyright   debian/changelog 
+%doc debian/changelog
+%license  debian/copyright 
 
 
 %files common 

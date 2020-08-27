@@ -9,17 +9,12 @@ Summary:        Official themes for the UKUI desktop
 
 License:        GPL-3.0 License
 URL:            https://github.com/ukui/ukui-themes
-Source0:        %{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      x86_64
 
-%if 0%{?rhel} && 0%{?rhel} >= 8
 BuildRequires: sassc
-%endif
 
-%if 0%{?fedora} && 0%{?fedora} >= 32
-BuildRequires: rubygem-sass
-%endif
 
 %description
  This package contains the official desktop themes of the UKUI desktop
@@ -31,7 +26,7 @@ BuildRequires: rubygem-sass
 %setup -q
  
 %build
-%{make_build}
+%{make_build} SASS=sassc
 
 %install
 %{make_install} INSTALL_ROOT=%{buildroot}
@@ -43,7 +38,12 @@ cp -r  ukui-icon-theme-classical %{buildroot}/usr/share/icons/
 cp -r  ukui-icon-theme-default %{buildroot}/usr/share/icons/
 
 %files
-%doc debian/changelog  debian/copyright
+%doc debian/changelog
+%license  debian/copyright
+%exclude %{_datadir}/icons/ukui-icon-theme-basic/16x16/devices/media-optical-audio.svg
+%exclude %{_datadir}/icons/ukui-icon-theme-basic/16x16/devices/media-cdrom-audio.svg
+%exclude %{_datadir}/icons/ukui-icon-theme-basic/16x16/devices/gnome-dev-disc-audio.svg
+%exclude %{_datadir}/icons/ukui-icon-theme-basic/16x16/devices/gnome-dev-cdrom-audio.svg
 %{_datadir}/mime/packages/ukui-custom.xml
 %{_datadir}/glib-2.0/schemas/25_ukui-themes.gschema.override
 %{_datadir}/icons/ukui-icon-theme-basic

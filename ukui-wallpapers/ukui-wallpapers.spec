@@ -2,7 +2,7 @@
 %define debug_package %{nil}
 
 Name:           ukui-wallpapers
-Version:        master
+Version:        20.04.2
 Release:        1%{?dist}
 Summary:        Wallpapers for UKUI desktop environment
 
@@ -33,13 +33,10 @@ BuildRequires:  meson
 
 %install
 %{meson_install}
+%find_lang %name
 
-
-%files
-%doc debian/copyright debian/changelog
+%files -f %name.lang
+%doc debian/changelog
+%license  debian/copyright
 %{_datadir}/backgrounds/*
-%{_datadir}/locale/bo/LC_MESSAGES/ukui-wallpapers.mo
-%{_datadir}/locale/tr/LC_MESSAGES/ukui-wallpapers.mo
-%{_datadir}/locale/zh_CN/LC_MESSAGES/ukui-wallpapers.mo
-%{_datadir}/locale/zh_TW/LC_MESSAGES/ukui-wallpapers.mo
 %{_datadir}/ukui-background-properties/

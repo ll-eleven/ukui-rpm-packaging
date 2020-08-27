@@ -1,5 +1,5 @@
 Name:           qt5-ukui-platformtheme
-Version:        master
+Version:        1.0.4
 Release:        1%{?dist}
 Summary:        Qt5 QPA platform theme of UKUI
 
@@ -90,7 +90,8 @@ pushd qmake-build
 popd
 
 %files
-%doc debian/changelog  debian/copyright
+%doc debian/changelog
+%license  debian/copyright 
 %{_libdir}/qt5/plugins/platformthemes/libqt5-ukui-platformtheme.so
 
 %files styles-devel
