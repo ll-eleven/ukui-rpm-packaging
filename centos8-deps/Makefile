@@ -2,13 +2,13 @@ DOCKER := $(shell { command -v podman || command -v docker; } 2>/dev/null)
 all: build-libfprint build-gsettings-qt build-redshift build-bamf build-lxqt-build-tools  build-libstatgrab build-libqtxdg build-sassc
 docker-build:
 	@echo ">> building rpms in container"
-	$(DOCKER) run --ulimit=host --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/centos:8   /bin/bash -c "dnf install -y dnf-plugins-core make curl rpm-build && make build"
+	$(DOCKER) run  --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/centos:8   /bin/bash -c "dnf install -y dnf-plugins-core make curl rpm-build && make build"
 deps:
 	@echo ">> install dependencies"
 	dnf install -y https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-8.noarch.rpm https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm  dnf-plugins-core make curl rpm-build  centos-release-stream python3 git
 	dnf config-manager --enable PowerTools
 	dnf config-manager --enable Stream-PowerTools
-	dnf install -y rpmfusion-free-release-tainted rpmfusion-nonfree-release-tainted
+	dnf install -y rpmfusion-free-release-tainted rpmfusion-nonfree-release-tainted intltool
 
 build: deps build-libfprint build-gsettings-qt build-redshift build-bamf build-lxqt-build-tools build-libstatgrab build-libqtxdg build-sassc
 
@@ -70,6 +70,5 @@ build-sassc:
 	dnf install -y  gcc-c++ rubygem-minitest ruby 
 	rpmbuild -ba  ~/rpmbuild/SPECS/sassc.spec 
 	dnf install -y /root/rpmbuild/RPMS/x86_64/sassc-3.5.0-2.el8.x86_64.rpm
-	ln -sf /usr/bin/sassc /usr/bin/sass
 
 .PHONY: deps build-libfprint build-gsettings-qt build-redshift build-bamf build-lxqt-build-tools build-libstatgrab build-libqtxdg build-sassc

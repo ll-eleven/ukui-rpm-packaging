@@ -6,15 +6,15 @@ all: build
 
 docker-build-fedora-32: 
 	@echo ">> building rpms in container"
-	$(DOCKER) run --ulimit=host --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:32   /bin/bash -c "sudo dnf install -y dnf-plugins-core make curl rpm-build && make build"
+	$(DOCKER) run  --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:32   /bin/bash -c "sudo dnf install -y dnf-plugins-core make curl rpm-build && make build"
 
 docker-build-fedora-rawhide: 
 	@echo ">> building rpms in container"
-	$(DOCKER) run --ulimit=host --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:rawhide   /bin/bash -c "sudo dnf install -y dnf-plugins-core make curl rpm-build && make build"
+	$(DOCKER) run  --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:rawhide   /bin/bash -c "sudo dnf install -y dnf-plugins-core make curl rpm-build && make build"
 
 docker-build-centos-8: 
 	@echo ">> building rpms in container"
-	$(DOCKER) run --ulimit=host --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/centos:8   /bin/bash -c "dnf install -y dnf-plugins-core make curl rpm-build && make build"
+	docker run  --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/centos:8   /bin/bash -c "dnf install -y dnf-plugins-core make curl rpm-build && make build"
 
 
 
@@ -29,26 +29,24 @@ ifneq (,$(filter .el%,$(DIST)))
 	dnf copr enable -y neonman/MATE
 	dnf copr enable -y neonman/MATE-Dependencies
 	make 	build-on-centos
+	make build-apps
 	
 else 
 	@echo ">> build ukui on fedora"
 	dnf install -y git  https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$$(rpm -E %{fedora}).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$$(rpm -E %{fedora}).noarch.rpm
 	make 	build-on-fedora
+	make build-apps
 endif
 
 
 build-on-fedora: 
 	make -C fedora-deps
-	make -C kylin-display-switch 
-	make -C kylin-nm
-	make -C kylin-video
-	make -C indicator-china-weather 
-	make -C kylin-scanner
 	make -C libinput-touch-translator
 	make -C biometric-authentication
 	make -C qt5-ukui-platformtheme
 	make -C peony 
 	make -C peony-extensions 
+	make -C time-shutdown
 	make -C ukui-biometric-auth 
 	make -C ukui-biometric-manager 
 	make -C ukui-control-center
@@ -56,6 +54,7 @@ build-on-fedora:
 	make -C ukui-kwin
 	make -C ukui-media
 	make -C ukui-menu 
+	make -C ukui-notification-daemon
 	make -C ukui-panel 
 	make -C ukui-power-manager
 	make -C ukui-screensaver
@@ -71,15 +70,12 @@ build-on-fedora:
 
 build-on-centos: 
 	make -C centos8-deps
-	make -C kylin-display-switch 
-	make -C kylin-nm
-	make -C kylin-video
-	make -C indicator-china-weather
 	make -C libinput-touch-translator
 	make -C biometric-authentication
 	make -C qt5-ukui-platformtheme
 	make -C peony 
 	make -C peony-extensions 
+	make -C time-shutdown
 	make -C ukui-biometric-auth 
 	make -C ukui-biometric-manager 
 	make -C ukui-control-center
@@ -87,6 +83,7 @@ build-on-centos:
 	make -C ukui-kwin
 	make -C ukui-media
 	make -C ukui-menu 
+	make -C ukui-notification-daemon
 	make -C ukui-panel 
 	make -C ukui-power-manager
 	make -C ukui-screensaver
@@ -98,9 +95,20 @@ build-on-centos:
 	make -C ukui-wallpapers
 	make -C ukui-themes
 	
-	
+build-apps:
+	make -C indicator-china-weather
+	make -C kylin-display-switch 
+	make -C kylin-ipmsg
+	make -C kylin-nm
+	make -C kylin-scanner
+	make -C kylin-screenshot
+	make -C kylin-video
+	make -C kylin-calculator
+	make -C kylin-music
+	make -C kylin-recording
+
 clean:
 	rm -rf ~/rpmbuild/{SOURCES,RPMS}
 
 
-.PHONY:   docker-build build build-on-fedora build-on-centos  clean
+.PHONY:   docker-build build build-on-fedora build-on-centos build-apps  clean

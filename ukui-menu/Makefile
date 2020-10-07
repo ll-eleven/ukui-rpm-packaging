@@ -1,7 +1,7 @@
 
 DOCKER := $(shell { command -v podman || command -v docker; } 2>/dev/null)
 PKG_NAME := ukui-menu
-PKG_VERSION := 2.0.7
+PKG_VERSION := 3.0.0
 
 # set the git tag based on the version
 ifneq (,$(filter master,$(PKG_VERSION)))
@@ -14,7 +14,7 @@ all: build
 
 docker-build: 
 	@echo ">> building ${PKG_NAME} rpms in container"
-	$(DOCKER) run  --ulimit=host  --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:32   /bin/bash -c "sudo dnf install -y make curl rpm-build && make build"
+	$(DOCKER) run    --rm --privileged -v `pwd`:/root/  -w /root/ docker.io/library/fedora:32   /bin/bash -c "sudo dnf install -y make curl rpm-build && make build"
 
 
 deps:
